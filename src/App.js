@@ -1,40 +1,60 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-import './App.css'
-import { HomePage } from './components/Home.page'
-import { RQSuperHeroesPage } from './components/RQSuperHeroes.page'
-import { SuperHeroesPage } from './components/SuperHeroes.page'
+import {
+  createBrowserRouter,
+  Route,
+  createRoutesFromElements,
+  RouterProvider
+} from 'react-router-dom'
+import About from './pages/About';
+import Home from './pages/Home';
+import FAQ from './pages/help/FAQ';
+import Contacts from './pages/help/Contacts';
+import NotFound from './pages/NotFound';
+import Careers, { careersLoader } from './pages/careers/Careers';
+import CareerDetails, { careerDetailsLoader } from './pages/careers/CareerDetails';
 
+/* layouts */
+import RootLayout from './layouts/RootLayout';
+import HelpLayout from './layouts/HelpLayout';
+import CareersLayout from './layouts/CareersLayout';
+import CareersError from './pages/careers/CareersError';
+
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/' element={<RootLayout />}>
+      <Route index element={<Home />} />
+      <Route path='about' element={<About />} />
+
+      <Route path='help' element={<HelpLayout />}>
+        <Route path='faq' element={<FAQ />} />
+        <Route path='contact' element={<Contacts />} />
+      </Route>
+
+      <Route 
+      path='careers' 
+      element={<CareersLayout />} 
+      errorElement={< CareersError />}>
+        <Route
+          index
+          element={<Careers />}
+          loader={careersLoader}
+        />
+        <Route
+          path=":id"
+          element={<CareerDetails />} 
+          loader={careerDetailsLoader}
+          />
+      </Route>
+
+
+      <Route path='*' element={<NotFound />} />
+    </Route>
+  )
+)
 function App() {
   return (
-    <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to='/'>Home</Link>
-            </li>
-            <li>
-              <Link to='/super-heroes'>Traditional Super Heroes</Link>
-            </li>
-            <li>
-              <Link to='/rq-super-heroes'>RQ Super Heroes</Link>
-            </li>
-          </ul>
-        </nav>
-        <Routes>
-          <Route path='/super-heroes'>
-            <SuperHeroesPage />
-          </Route>
-          <Route path='/rq-super-heroes'>
-            <RQSuperHeroesPage />
-          </Route>s
-          <Route path='/'>
-            <HomePage />
-          </Route>
-        </Routes>
-      </div>
-    </Router>
-  )
+    <RouterProvider router={router} />
+  );
 }
 
 export default App
